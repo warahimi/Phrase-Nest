@@ -1,16 +1,17 @@
+
 spring:
   application:
     name: phrasenest-backend
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/phrasenest}
-    username: ${DB_USERNAME:phrasenest}
-    password: ${DB_PASSWORD:phrasenest}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:admin123}
 
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -21,7 +22,7 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:8081}
 
 management:
   endpoints:
@@ -37,3 +38,11 @@ info:
     name: PhraseNest
     description: Learn idioms, phrases, phrasal verbs, and common expressions.
     version: 0.0.1
+
+
+  security:
+    user:
+      name: admin
+      password: local-admin-password
+      roles:
+        - ADMIN
