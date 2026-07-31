@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -103,6 +105,35 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure(
                         "An unexpected server error occurred.",
                         null
+                ));
+    }
+    /**
+     * Handles validation errors on request parameters and path variables.
+     *
+     * Example:
+     * GET /resolve?query=
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Map<String, String>>>
+    handleConstraintViolation(
+            ConstraintViolationException exception
+    ) {
+        Map<String, String> errors = new LinkedHashMap<>();
+
+        for (ConstraintViolation<?> violation :
+                exception.getConstraintViolations()) {
+
+            errors.put(
+                    violation.getPropertyPath().toString(),
+                    violation.getMessage()
+            );
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure(
+                        "Request validation failed.",
+                        errors
                 ));
     }
 }

@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExpressionAliasMapper {
 
-    public ExpressionAliasResponse toResponse(
-            ExpressionAlias alias
-    ) {
+    public ExpressionAliasResponse toResponse(ExpressionAlias alias) {
         return new ExpressionAliasResponse(
                 alias.getId(),
                 alias.getExpression().getId(),
