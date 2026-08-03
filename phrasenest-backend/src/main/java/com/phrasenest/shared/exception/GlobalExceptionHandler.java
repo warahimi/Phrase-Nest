@@ -1,6 +1,8 @@
 package com.phrasenest.shared.exception;
 
 import com.phrasenest.shared.api.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,14 +93,39 @@ public class GlobalExceptionHandler {
     }
 
     /**
+//     * Final fallback for unexpected errors.
+//     *
+//     * We do not expose exception.getMessage() because it might contain
+//     * database, server, or security details.
+//     */
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiResponse<Void>>
+//    handleUnexpected(Exception exception) {
+//
+//        return ResponseEntity
+//                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(ApiResponse.failure(
+//                        "An unexpected server error occurred.",
+//                        null
+//                ));
+//    }
+
+    private static final Logger log =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
      * Final fallback for unexpected errors.
-     *
-     * We do not expose exception.getMessage() because it might contain
-     * database, server, or security details.
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>>
-    handleUnexpected(Exception exception) {
+    public ResponseEntity<ApiResponse<Void>> handleUnexpected(
+            Exception exception) {
+
+        log.error(
+                "Unexpected exception. Type: {}, Message: {}",
+                exception.getClass().getName(),
+                exception.getMessage(),
+                exception
+        );
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -115,9 +142,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>>
-    handleConstraintViolation(
-            ConstraintViolationException exception
-    ) {
+    handleConstraintViolation(ConstraintViolationException exception)
+    {
         Map<String, String> errors = new LinkedHashMap<>();
 
         for (ConstraintViolation<?> violation :

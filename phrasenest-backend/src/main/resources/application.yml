@@ -46,3 +46,4 @@ info:
       password: local-admin-password
       roles:
         - ADMIN
+
