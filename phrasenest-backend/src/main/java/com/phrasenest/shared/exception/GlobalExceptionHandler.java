@@ -162,4 +162,44 @@ public class GlobalExceptionHandler {
                         errors
                 ));
     }
+    /**
+     * Handles invalid business input.
+     *
+     * Examples:
+     * - A category cannot be its own parent.
+     * - A parent assignment would create a circular hierarchy.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>>
+    handleIllegalArgument(
+            IllegalArgumentException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure(
+                        exception.getMessage(),
+                        null
+                ));
+    }
+
+    /**
+     * Handles operations that are valid in general but not allowed in the
+     * resource's current state.
+     *
+     * Examples:
+     * - Deleting a category that still has child categories.
+     * - Deleting a category assigned to expressions.
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Void>>
+    handleIllegalState(
+            IllegalStateException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.failure(
+                        exception.getMessage(),
+                        null
+                ));
+    }
 }
